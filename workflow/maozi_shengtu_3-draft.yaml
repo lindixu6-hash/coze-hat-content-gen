@@ -1,0 +1,1380 @@
+schema_version: 1.0.0
+name: maozi_shengtu_3
+id: 7599575378244075546
+description: "当用户上传商品图之后，可以自行输入环境、服装变量，调用此工作流，生成8张模特图，传入飞书多维表格。"
+mode: workflow
+icon: plugin_icon/workflow.png
+nodes:
+    - id: "100001"
+      type: start
+      title: 开始
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Start-v2.jpg
+      description: "工作流的起始节点，用于设定启动工作流需要的信息"
+      position:
+        x: 440.80911684916157
+        y: 149.14284902397713
+      parameters:
+        node_outputs:
+            Hat_style:
+                type: string
+                required: true
+                value: null
+            clothing:
+                type: string
+                required: true
+                value: null
+            front_image:
+                type: image
+                required: true
+                value: null
+            lateral_image:
+                type: image
+                required: true
+                value: null
+            scene:
+                type: string
+                required: true
+                value: null
+    - id: "900001"
+      type: end
+      title: 结束
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-End-v2.jpg
+      description: "工作流的最终节点，用于返回工作流运行后的结果信息"
+      position:
+        x: 6379.28207682543
+        y: -309.32055659818843
+      parameters:
+        node_inputs:
+            - name: output
+              input:
+                type: string
+                value:
+                    path: title
+                    ref_node: "192607"
+        terminatePlan: returnVariables
+    - id: "190789"
+      type: plugin
+      title: add_records
+      icon: https://p9-flow-product-sign.byteimg.com/tos-cn-i-13w3uml6bg/dfc3d7f4eb004d0584aaf47a510beba2~tplv-13w3uml6bg-resize:128:128.image?rk3s=2e2596fd&x-expires=1770952393&x-signature=5DEcefBPnsOSgsvI2gmiwaz%2BRic%3D
+      description: "在多维表格数据表中新增多条记录，单次调用最多新增 500 条记录。"
+      position:
+        x: 5731.772352268285
+        y: -347.61828475680807
+      parameters:
+        apiParam:
+            - name: apiID
+              input:
+                type: string
+                value: "7395047759797288987"
+            - name: apiName
+              input:
+                type: string
+                value: "add_records"
+            - name: pluginID
+              input:
+                type: string
+                value: "7395047759797272603"
+            - name: pluginName
+              input:
+                type: string
+                value: "飞书多维表格"
+            - name: pluginVersion
+              input:
+                type: string
+                value: ""
+            - name: tips
+              input:
+                type: string
+                value: ""
+            - name: outDocLink
+              input:
+                type: string
+                value: ""
+            - name: pluginAuthMode
+              input:
+                type: integer
+                value: 0
+        node_inputs:
+            - name: app_token
+              input:
+                type: string
+                value: "XEcOb1ukHasVcOsGtShcNxSynhc"
+            - name: records
+              input:
+                type: list
+                items:
+                    type: object
+                    value: null
+                value:
+                    path: final_list
+                    ref_node: "126006"
+            - name: table_id
+              input:
+                type: string
+                value: "tbljLLVsAaWBJP19"
+            - name: table_name
+              input:
+                type: string
+                value: "帽子自动生图"
+        node_outputs:
+            code:
+                type: float
+                value: null
+                description: 错误码，非 0 表示失败。
+            data:
+                type: object
+                properties:
+                    records:
+                        type: list
+                        items:
+                            type: object
+                            properties:
+                                fields:
+                                    type: string
+                                    value: null
+                                    description: 数据表的字段，即数据表的列，格式为 json 字符串。
+                                record_id:
+                                    type: string
+                                    value: null
+                                    description: 一条记录的唯一标识 id
+                            value: null
+                        value: null
+                        description: 本次请求新增的记录列表
+                value: null
+                description: 返回结果
+            log_id:
+                type: string
+                value: null
+                description: 链路追踪 id
+            msg:
+                type: string
+                value: null
+                description: 错误描述
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            timeoutMs: 180000
+    - id: "158636"
+      type: llm
+      title: prompt
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-LLM-v2.jpg
+      description: "调用大语言模型,使用变量和提示词生成回复"
+      version: "3"
+      position:
+        x: 1747.2991070491998
+        y: -374.2052419552963
+      parameters:
+        fcParamVar:
+            knowledgeFCParam: {}
+        llmParam:
+            - name: apiMode
+              input:
+                type: integer
+                value: "0"
+            - name: temperature
+              input:
+                type: float
+                value: "0.8"
+            - name: topP
+              input:
+                type: float
+                value: "1"
+            - name: frequencyPenalty
+              input:
+                type: float
+                value: "0"
+            - name: maxTokens
+              input:
+                type: integer
+                value: "4096"
+            - name: spCurrentTime
+              input:
+                type: boolean
+                value: false
+            - name: spAntiLeak
+              input:
+                type: boolean
+                value: false
+            - name: thinkingType
+              input:
+                type: string
+                value: enabled
+            - name: responseFormat
+              input:
+                type: integer
+                value: "2"
+            - name: modelName
+              input:
+                type: string
+                value: 豆包·1.6·视觉理解-250815
+            - name: modelType
+              input:
+                type: integer
+                value: "1756106585"
+            - name: generationDiversity
+              input:
+                type: string
+                value: balance
+            - name: parameters
+              input:
+                type: object
+                value: null
+            - name: prompt
+              input:
+                type: string
+                value: ""
+            - name: enableChatHistory
+              input:
+                type: boolean
+                value: false
+            - name: chatHistoryRound
+              input:
+                type: integer
+                value: "3"
+            - name: systemPrompt
+              input:
+                type: string
+                value: |-
+                    你是小红书穿搭提示词专家。根据用户输入的 {{scene}}（场景描述）和{{clothing}}（服装饰品要求）输出 300字以内 生图 Prompt。
+
+                    必须严格遵守：
+
+                    最优先：100%还原{{front_image}}{{lateral_image}}这两个参考图里面的帽子的版型、形状、颜色。
+
+                    要求：同一模特、模特的长相不允许发生变化、同一场景、同一服装。
+
+                    人物与形象： 中国面孔，大众脸美女，可参考明星卢昱晓长相，气质可参考35岁高圆圆/董洁，年龄28-32岁。
+
+                    画面与构图： 产出一组8张同一人物、同一场景、同一服装、姿势不同连拍。3:4竖版，胶片颗粒感，秋冬氛围，85mm焦距，模仿小红书头部博主审美。
+
+                    服装风格：契合当前场景、季节、温度。质感好，拒绝大Logo、夸张印花、紧身衣。合身剪裁，选经典款。穿搭要求给人很有品味、很会穿搭的感觉。（若滑雪场，为滑雪服）
+
+                    妆容： 自然感，腮红适量加重。
+
+                    配饰： 精简，显品质与财力（如细珍珠项链、简约腕表）。
+
+                    场景扩写：  根据用户输入的  {{scene}}进行扩写。若为居家，场景为室内简约居家环境（米白色墙面+木质地板）、法式奶油风；户外扩写为高级咖啡馆/美术馆。场景尽可能简约，不要出现很假的场景。
+
+                    动作： 至少4张对镜自拍，手持复古CCD相机/苹果手机，若为相机，要求小巧精致。姿势可为坐椅托腮举机侧脸展帽，蹲姿举手机对镜自拍，或站姿单手叉腰举手机对镜自拍。对镜拍需稍微转头，多角度展示帽子。同一组图只允许使用一种道具。
+
+                    禁止： 背景不允许出现其他人。表情自然松弛。不允许换衣服。不允许场景很跳脱。不允许很奇怪的动作。严禁出现不自然的仰头或扭曲姿态。
+
+                    输出要求： 直接输出提示词正文，严禁任何开场白，严禁超过300字。
+            - name: stableSystemPrompt
+              input:
+                type: string
+                value: ""
+            - name: canContinue
+              input:
+                type: boolean
+                value: false
+            - name: loopPromptVersion
+              input:
+                type: string
+                value: ""
+            - name: loopPromptName
+              input:
+                type: string
+                value: ""
+            - name: loopPromptId
+              input:
+                type: string
+                value: ""
+        node_inputs:
+            - name: scene
+              input:
+                value:
+                    path: scene
+                    ref_node: "100001"
+            - name: front_image
+              input:
+                type: image
+                value:
+                    path: data
+                    ref_node: "114960"
+                is_vision: true
+            - name: lateral_image
+              input:
+                type: image
+                value:
+                    path: data
+                    ref_node: "1759750"
+                is_vision: true
+            - name: clothing
+              input:
+                value:
+                    path: clothing
+                    ref_node: "100001"
+        node_outputs:
+            output:
+                type: string
+                value: null
+            reasoning_content:
+                type: string
+                value: null
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            switch: false
+            timeoutMs: 180000
+    - id: "113596"
+      type: code
+      title: 代码 转array{string}
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Code-v2.jpg
+      description: "编写代码，处理输入变量来生成返回值"
+      version: v2
+      position:
+        x: 1048.0611079826344
+        y: 479.18215228036286
+      parameters:
+        code: |-
+            async function main({ params }: Args): Promise<Output> {
+                // 1. 从 params 中获取你在右侧面板定义的两个变量
+                // 请确保右侧“输入”列表里的变量名分别是 front_image 和 lateral_image
+                const img1 = params.front_image;
+                const img2 = params.lateral_image;
+
+                // 2. 提取 URL 并过滤掉空值
+                // 兼容处理：无论传入的是对象 {url: "..."} 还是直接的字符串 URL
+                const getUrl = (img) => {
+                    if (!img) return null;
+                    if (typeof img === 'object' && img.url) return img.url;
+                    if (typeof img === 'string') return img;
+                    return null;
+                };
+
+                const urlArray = [getUrl(img1), getUrl(img2)].filter(url => url !== null);
+
+                // 3. 返回包含数组的对象
+                // 这里的 key 名（url）要和你在右侧“输出”面板定义的变量名一致
+                return {
+                    "url": urlArray
+                };
+            }
+        language: 5
+        node_inputs:
+            - name: front_image
+              input:
+                type: image
+                value:
+                    path: data
+                    ref_node: "114960"
+            - name: lateral_image
+              input:
+                type: image
+                value:
+                    path: data
+                    ref_node: "1759750"
+        node_outputs:
+            url:
+                type: list
+                items:
+                    type: string
+                    value: null
+                value: null
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            switch: false
+            timeoutMs: 60000
+    - id: "117190"
+      type: plugin
+      title: generateImage_3
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Plugin-v2.jpg
+      description: "图像生成"
+      position:
+        x: 2338.864241647557
+        y: -683.701066921875
+      parameters:
+        apiParam:
+            - name: apiID
+              input:
+                type: string
+                value: "7591769314940780563"
+            - name: apiName
+              input:
+                type: string
+                value: "generateImage"
+            - name: pluginID
+              input:
+                type: string
+                value: "7591769314940764179"
+            - name: pluginName
+              input:
+                type: string
+                value: "Doubao-Seedream-4.5（自接入版）"
+            - name: pluginVersion
+              input:
+                type: string
+                value: ""
+            - name: tips
+              input:
+                type: string
+                value: ""
+            - name: outDocLink
+              input:
+                type: string
+                value: ""
+        node_inputs:
+            - name: api_key
+              input:
+                type: string
+                value: "9d4b37c2-a567-4cfd-9765-f60343dace47"
+            - name: model_id
+              input:
+                type: string
+                value: "doubao-seedream-4-5-251128"
+            - name: prompt
+              input:
+                value:
+                    path: output
+                    ref_node: "158636"
+            - name: max_images
+              input:
+                type: integer
+                value: 8
+            - name: reference_images
+              input:
+                value:
+                    path: url
+                    ref_node: "113596"
+            - name: size
+              input:
+                type: string
+                value: "2400x3200"
+            - name: watermark
+              input:
+                type: boolean
+                value: false
+        node_outputs:
+            code:
+                type: float
+                value: null
+            data:
+                type: list
+                items:
+                    type: string
+                    value: null
+                value: null
+            log_id:
+                type: string
+                value: null
+            msg:
+                type: string
+                value: null
+        settingOnError:
+            dataOnErr: |-
+                {
+                    "code": 0,
+                    "data": [],
+                    "log_id": "",
+                    "msg": ""
+                }
+            processType: 1
+            retryTimes: 1
+            switch: false
+            timeoutMs: 180000
+    - id: "192607"
+      type: llm
+      title: 小红书文案生成
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-LLM-v2.jpg
+      description: "调用大语言模型,使用变量和提示词生成回复"
+      version: "3"
+      position:
+        x: 3006.9177373816406
+        y: -340.5358983830166
+      parameters:
+        fcParam:
+            knowledgeFCParam:
+                global_setting:
+                    auto: false
+                    min_score: 0.5
+                    no_recall_reply_customize_prompt: 抱歉，您的问题超出了我的知识范围，并且无法在当前阶段回答
+                    no_recall_reply_mode: 0
+                    search_mode: 0
+                    show_source: false
+                    show_source_mode: 0
+                    top_k: 3
+                    use_nl2_sql: true
+                    use_rerank: true
+                    use_rewrite: true
+                knowledgeList:
+                    - id: "7598562452460077092"
+                      knowledgeType: 0
+                      name: xiaohongshu
+                      volcano_dataset_service_info:
+                        id: ""
+                        name: ""
+            llmNodeUID: ""
+            pluginFCParam: {}
+            spaceID: "7509028881832378402"
+            workflowVersion: ""
+        fcParamVar:
+            knowledgeFCParam:
+                knowledgeList: []
+        llmParam:
+            - name: generationDiversity
+              input:
+                type: string
+                value: precise
+            - name: apiMode
+              input:
+                type: integer
+                value: "0"
+            - name: temperature
+              input:
+                type: float
+                value: "0.2"
+            - name: topP
+              input:
+                type: float
+                value: "1"
+            - name: frequencyPenalty
+              input:
+                type: float
+                value: "0"
+            - name: maxTokens
+              input:
+                type: integer
+                value: "4096"
+            - name: spCurrentTime
+              input:
+                type: boolean
+                value: false
+            - name: spAntiLeak
+              input:
+                type: boolean
+                value: false
+            - name: thinkingType
+              input:
+                type: string
+                value: enabled
+            - name: responseFormat
+              input:
+                type: integer
+                value: "2"
+            - name: modelName
+              input:
+                type: string
+                value: 豆包·1.8·深度思考
+            - name: modelType
+              input:
+                type: integer
+                value: "1768187121"
+            - name: parameters
+              input:
+                type: object
+                properties:
+                    max_completion_tokens:
+                        type: integer
+                        value: "0"
+                    reasoning_effort:
+                        type: string
+                        value: medium
+                value: null
+            - name: prompt
+              input:
+                type: string
+                value: ""
+            - name: enableChatHistory
+              input:
+                type: boolean
+                value: false
+            - name: chatHistoryRound
+              input:
+                type: integer
+                value: "3"
+            - name: systemPrompt
+              input:
+                type: string
+                value: |+
+                    # Role
+                    你是一个极具网感的小红书头部博主，擅长写那种让人忍不住想点赞收藏的穿搭和旅行笔记。
+
+                    # 参考
+                    参考输入的{{prompt}}提示词和{{front_image}}帽子正面照、{{lateral_image}}帽子侧面照撰写合适的小红书标题和文案。
+
+                    # 要求
+                    优先学习{#LibraryBlock id="7598562452460077092" uuid="OQ7UdOv49ZWMlB8vjjUgO" type="text"#}xiaohongshu{#/LibraryBlock#}中的
+                    小红书爆款标题和文案写作技巧。
+
+                    # 注意
+                    1. {{Hat_style}}帽子款式已告知，必须以此为准。
+                    2. 不必须和帽子有关，不是卖货博主，而是要打造颜值、穿搭、旅行博主等真人美女小红书账号。
+                    3. 对输出的标题和文案进行自查自纠，避免语病，避免不自然语言。
+
+                    # 文案排版
+                    短句，正常换行。
+                    结尾加上小红书热门标签，标签数量控制在8-12个。标签包含品类、风格、场景、流量词。
+
+                    # 输出格式
+                    必须且只能输出标准的 JSON 格式，严禁包含任何解释性文字或推理过程。格式如下： { "title": "这里写标题", "content": "这里写正文" }
+
+            - name: stableSystemPrompt
+              input:
+                type: string
+                value: ""
+            - name: canContinue
+              input:
+                type: boolean
+                value: false
+            - name: loopPromptVersion
+              input:
+                type: string
+                value: ""
+            - name: loopPromptName
+              input:
+                type: string
+                value: ""
+            - name: loopPromptId
+              input:
+                type: string
+                value: ""
+        node_inputs:
+            - name: prompt
+              input:
+                value:
+                    path: output
+                    ref_node: "158636"
+            - name: front_image
+              input:
+                type: image
+                value:
+                    path: data
+                    ref_node: "114960"
+                is_vision: true
+            - name: Hat_style
+              input:
+                value:
+                    path: Hat_style
+                    ref_node: "100001"
+            - name: lateral_image
+              input:
+                type: image
+                value:
+                    path: data
+                    ref_node: "1759750"
+                is_vision: true
+        node_outputs:
+            content:
+                type: string
+                value: null
+            reasoning_content:
+                type: string
+                value: null
+            title:
+                type: string
+                value: null
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            switch: false
+            timeoutMs: 180000
+    - id: "114960"
+      type: plugin
+      title: cutout-1
+      icon: https://p6-flow-product-sign.byteimg.com/tos-cn-i-13w3uml6bg/75e0f57b24274de993fdd27341ed1062~tplv-13w3uml6bg-resize:128:128.image?rk3s=2e2596fd&x-expires=1771070542&x-signature=aLqPMEIs8tnr71gARTUPDCE4UJg%3D
+      description: ""
+      position:
+        x: 1084.692213831527
+        y: -307.3493844817536
+      parameters:
+        apiParam:
+            - name: apiID
+              input:
+                type: string
+                value: "7438919188246429731"
+            - name: apiName
+              input:
+                type: string
+                value: "cutout"
+            - name: pluginID
+              input:
+                type: string
+                value: "7438919188246413347"
+            - name: pluginName
+              input:
+                type: string
+                value: "智能抠图"
+            - name: pluginVersion
+              input:
+                type: string
+                value: ""
+            - name: tips
+              input:
+                type: string
+                value: ""
+            - name: outDocLink
+              input:
+                type: string
+                value: ""
+        node_inputs:
+            - name: url
+              input:
+                value:
+                    path: front_image
+                    ref_node: "100001"
+            - name: only_mask
+              input:
+                type: string
+                value: "0"
+            - name: output_mode
+              input:
+                type: string
+                value: "0"
+            - name: prompt
+              input:
+                type: string
+                value: "帽子，提升边缘精度"
+        node_outputs:
+            data:
+                type: image
+                value: null
+                description: 透明背景图，在输出模式为透明背景时生效
+            mask:
+                type: string
+                value: null
+                description: 抠图区域蒙板矢量图，在输出模式为蒙版矢量图时生效
+            msg:
+                type: string
+                value: null
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            timeoutMs: 180000
+    - id: "153447"
+      type: plugin
+      title: upload_media_1
+      icon: https://p3-flow-product-sign.byteimg.com/tos-cn-i-13w3uml6bg/804fee8ce9b444089831cd1166500693~tplv-13w3uml6bg-resize:128:128.image?rk3s=2e2596fd&x-expires=1771128000&x-signature=X7HyWSWiwpNKU%2Bw3N5QJdMcSG1s%3D
+      description: "飞书云文档，支持以下操作：\n\n1. 创建文档；\n2. 在文档中新增内容，支持 纯文本或者 markdown 格式；\n3. 获取文档的内容，支持以纯文本或者 Markdown 格式返回；\n4. 获取文档的所有块；\n5. 获取文档的基本信息；\n6. 搜索文档类型的文档；\n7. 搜索 PPT 类型的文档；"
+      position:
+        x: 3596.40901256179
+        y: 67.95328121788009
+      parameters:
+        apiParam:
+            - name: apiID
+              input:
+                type: string
+                value: "7501597925768953894"
+            - name: apiName
+              input:
+                type: string
+                value: "upload_media"
+            - name: pluginID
+              input:
+                type: string
+                value: "7395047785122398235"
+            - name: pluginName
+              input:
+                type: string
+                value: "飞书云文档"
+            - name: pluginVersion
+              input:
+                type: string
+                value: ""
+            - name: tips
+              input:
+                type: string
+                value: ""
+            - name: outDocLink
+              input:
+                type: string
+                value: ""
+            - name: pluginAuthMode
+              input:
+                type: integer
+                value: 0
+        node_inputs:
+            - name: file_name
+              input:
+                type: string
+                value: "product..png"
+            - name: file_url
+              input:
+                type: string
+                value:
+                    path: product_url
+                    ref_node: "188366"
+            - name: parent_node
+              input:
+                type: string
+                value: "XEcOb1ukHasVcOsGtShcNxSynhc"
+            - name: parent_type
+              input:
+                type: string
+                value: "bitable"
+        node_outputs:
+            code:
+                type: float
+                value: null
+                description: 错误码，非 0 表示失败。
+            data:
+                type: object
+                properties:
+                    file_token:
+                        type: string
+                        value: null
+                        description: 上传的素材唯一标识
+                value: null
+                description: 响应结果
+            log_id:
+                type: string
+                value: null
+                description: 链路追踪 id
+            msg:
+                type: string
+                value: null
+                description: 错误描述
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            timeoutMs: 180000
+    - id: "188366"
+      type: code
+      title: image转url-1
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Code-v2.jpg
+      description: "编写代码，处理输入变量来生成返回值"
+      version: v2
+      position:
+        x: 3543.375610622009
+        y: -683.701066921875
+      parameters:
+        code: "async function main({ params }: Args): Promise<Output> {\n    // 1. 从输入变量中获取图片对象\n    // 根据你的截图，输入变量名是 front_image\n    const imageFile = params.front_image;\n\n    // 2. 逻辑处理：通常平台的文件对象会包含 url 属性\n    // 如果平台已经自动处理了上传，你只需要提取它\n    let finalUrl = \"\";\n    \n    if (imageFile && typeof imageFile === 'object') {\n        // 尝试获取该对象的 url 属性\n        finalUrl = imageFile.url || \"无有效URL\";\n    } else if (typeof imageFile === 'string') {\n        // 如果输入已经是字符串，直接赋值\n        finalUrl = imageFile;\n    }\n\n    // 3. 构建输出对象\n    // 你的输出变量名是 product_url，类型是 str\n    const ret = {\n        \"product_url\": finalUrl \n    };\n\n    return ret;\n}"
+        language: 5
+        node_inputs:
+            - name: front_image
+              input:
+                value:
+                    path: data
+                    ref_node: "114960"
+        node_outputs:
+            product_url:
+                type: string
+                value: null
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            switch: false
+            timeoutMs: 60000
+    - id: "144377"
+      type: loop
+      title: 循环
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Loop-v2.jpg
+      description: "用于通过设定循环次数和逻辑，重复执行一系列任务"
+      position:
+        x: 4366.004913408855
+        y: -641.177559847588
+      canvas_position:
+        x: 4366.004913408855
+        y: -177.56578599634878
+      parameters:
+        loopCount:
+            type: integer
+            value:
+                content: 10
+                rawMeta:
+                    type: 2
+                type: literal
+        loopType: array
+        node_inputs:
+            - name: item
+              input:
+                value:
+                    path: data
+                    ref_node: "117190"
+        node_outputs:
+            tokens_output:
+                value:
+                    type: list
+                    items:
+                        type: string
+                        value: null
+                    value:
+                        path: data.file_token
+                        ref_node: "147489"
+        variableParameters: []
+      nodes:
+        - id: "147489"
+          type: plugin
+          title: upload_media_2
+          icon: https://p3-flow-product-sign.byteimg.com/tos-cn-i-13w3uml6bg/804fee8ce9b444089831cd1166500693~tplv-13w3uml6bg-resize:128:128.image?rk3s=2e2596fd&x-expires=1771128000&x-signature=X7HyWSWiwpNKU%2Bw3N5QJdMcSG1s%3D
+          description: "飞书云文档，支持以下操作：\n\n1. 创建文档；\n2. 在文档中新增内容，支持 纯文本或者 markdown 格式；\n3. 获取文档的内容，支持以纯文本或者 Markdown 格式返回；\n4. 获取文档的所有块；\n5. 获取文档的基本信息；\n6. 搜索文档类型的文档；\n7. 搜索 PPT 类型的文档；"
+          position:
+            x: 0
+            y: 100
+          parameters:
+            apiParam:
+                - name: apiID
+                  input:
+                    type: string
+                    value: "7501597925768953894"
+                - name: apiName
+                  input:
+                    type: string
+                    value: "upload_media"
+                - name: pluginID
+                  input:
+                    type: string
+                    value: "7395047785122398235"
+                - name: pluginName
+                  input:
+                    type: string
+                    value: "飞书云文档"
+                - name: pluginVersion
+                  input:
+                    type: string
+                    value: ""
+                - name: tips
+                  input:
+                    type: string
+                    value: ""
+                - name: outDocLink
+                  input:
+                    type: string
+                    value: ""
+                - name: pluginAuthMode
+                  input:
+                    type: integer
+                    value: 0
+            node_inputs:
+                - name: file_name
+                  input:
+                    type: string
+                    value: "generated_hat.png"
+                - name: file_url
+                  input:
+                    type: string
+                    value:
+                        path: item
+                        ref_node: "144377"
+                - name: parent_node
+                  input:
+                    type: string
+                    value: "XEcOb1ukHasVcOsGtShcNxSynhc"
+                - name: parent_type
+                  input:
+                    type: string
+                    value: "bitable"
+            node_outputs:
+                code:
+                    type: float
+                    value: null
+                    description: 错误码，非 0 表示失败。
+                data:
+                    type: object
+                    properties:
+                        file_token:
+                            type: string
+                            value: null
+                            description: 上传的素材唯一标识
+                    value: null
+                    description: 响应结果
+                log_id:
+                    type: string
+                    value: null
+                    description: 链路追踪 id
+                msg:
+                    type: string
+                    value: null
+                    description: 错误描述
+            settingOnError:
+                processType: 1
+                retryTimes: 0
+                timeoutMs: 180000
+      edges:
+        - source_node: "144377"
+          target_node: "147489"
+          source_port: loop-function-inline-output
+        - source_node: "147489"
+          target_node: "144377"
+          target_port: loop-function-inline-input
+    - id: "126006"
+      type: code
+      title: 打包对象数组
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Code-v2.jpg
+      description: "编写代码，处理输入变量来生成返回值"
+      version: v2
+      position:
+        x: 5063.604850091312
+        y: -106.2160223083498
+      parameters:
+        code: "async def main(args):\n    # 从发现的 params 对象中提取数据\n    params = args.get(\"params\", {})\n    \n    t = params.get(\"title\")\n    c = params.get(\"content\")\n    p = params.get(\"p_token\")\n    g = params.get(\"g_tokens\", [])\n    l = params.get(\"l_token\")\n\n\n    fields = {\n        \"title\": t if t else \"标题提取失败\",\n        \"content\": c if c else \"内容提取失败\",\n        \"product_image\": [{\"file_token\": p}] if p else [],\n        \"lateral_image\": [{\"file_token\": l}] if l else [],\n        \"final_images\": [{\"file_token\": token} for token in g] if g else []\n    }\n\n    return {\n        \"final_list\": [{\"fields\": fields}]\n    }"
+        language: 3
+        node_inputs:
+            - name: p_token
+              input:
+                value:
+                    path: data.file_token
+                    ref_node: "153447"
+            - name: g_tokens
+              input:
+                type: list
+                items:
+                    type: string
+                    value: null
+                value:
+                    path: tokens_output
+                    ref_node: "144377"
+            - name: title
+              input:
+                value:
+                    path: title
+                    ref_node: "192607"
+            - name: content
+              input:
+                value:
+                    path: content
+                    ref_node: "192607"
+            - name: l_token
+              input:
+                type: string
+                value:
+                    path: data.file_token
+                    ref_node: "1292508"
+        node_outputs:
+            final_list:
+                type: list
+                items:
+                    type: object
+                    value: null
+                value: null
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            switch: false
+            timeoutMs: 60000
+    - id: "1759750"
+      type: plugin
+      title: cutout-2
+      icon: https://p6-flow-product-sign.byteimg.com/tos-cn-i-13w3uml6bg/75e0f57b24274de993fdd27341ed1062~tplv-13w3uml6bg-resize:128:128.image?rk3s=2e2596fd&x-expires=1771070542&x-signature=aLqPMEIs8tnr71gARTUPDCE4UJg%3D
+      description: ""
+      position:
+        x: 1179.3012015385132
+        y: -656.9394060811067
+      parameters:
+        apiParam:
+            - name: apiID
+              input:
+                type: string
+                value: "7438919188246429731"
+            - name: apiName
+              input:
+                type: string
+                value: "cutout"
+            - name: pluginID
+              input:
+                type: string
+                value: "7438919188246413347"
+            - name: pluginName
+              input:
+                type: string
+                value: "智能抠图"
+            - name: pluginVersion
+              input:
+                type: string
+                value: ""
+            - name: tips
+              input:
+                type: string
+                value: ""
+            - name: outDocLink
+              input:
+                type: string
+                value: ""
+        node_inputs:
+            - name: url
+              input:
+                value:
+                    path: lateral_image
+                    ref_node: "100001"
+            - name: only_mask
+              input:
+                type: string
+                value: "0"
+            - name: output_mode
+              input:
+                type: string
+                value: "0"
+            - name: prompt
+              input:
+                type: string
+                value: "帽子，提升边缘精度"
+        node_outputs:
+            data:
+                type: image
+                value: null
+                description: 透明背景图，在输出模式为透明背景时生效
+            mask:
+                type: string
+                value: null
+                description: 抠图区域蒙板矢量图，在输出模式为蒙版矢量图时生效
+            msg:
+                type: string
+                value: null
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            timeoutMs: 180000
+    - id: "147891"
+      type: code
+      title: image转url-2
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Code-v2.jpg
+      description: "编写代码，处理输入变量来生成返回值"
+      version: v2
+      position:
+        x: 3126.960258288013
+        y: 248.72388570425943
+      parameters:
+        code: "async function main({ params }: Args): Promise<Output> {\n    const input = params.lateral_image; // 确保这里对应你的输入变量名\n    let finalUrl = \"\";\n\n    if (input) {\n        // 1. 尝试直接获取 url 属性 (最常见情况)\n        if (typeof input === 'object') {\n            finalUrl = input.url || input.file_url || \"\";\n        } \n        \n        // 2. 如果还是没找到，或者是字符串，尝试正则提取\n        if (!finalUrl) {\n            const rawString = typeof input === 'string' ? input : JSON.stringify(input);\n            const match = rawString.match(/https?:\\/\\/[^\\s<>\"]+/);\n            if (match) {\n                // 清理可能存在的转义字符或引号\n                finalUrl = match[0].replace(/\\\\\"/g, '').replace(/\"/g, '');\n            }\n        }\n    }\n\n    return {\n        \"l_url\": finalUrl || \"No URL found\" // 对应你的输出变量名\n    };\n}"
+        language: 5
+        node_inputs:
+            - name: lateral_image
+              input:
+                value:
+                    path: data
+                    ref_node: "1759750"
+        node_outputs:
+            l_url:
+                type: string
+                value: null
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            switch: false
+            timeoutMs: 60000
+    - id: "1292508"
+      type: plugin
+      title: upload_media_3
+      icon: https://p3-flow-product-sign.byteimg.com/tos-cn-i-13w3uml6bg/804fee8ce9b444089831cd1166500693~tplv-13w3uml6bg-resize:128:128.image?rk3s=2e2596fd&x-expires=1771128000&x-signature=X7HyWSWiwpNKU%2Bw3N5QJdMcSG1s%3D
+      description: "飞书云文档，支持以下操作：\n\n1. 创建文档；\n2. 在文档中新增内容，支持 纯文本或者 markdown 格式；\n3. 获取文档的内容，支持以纯文本或者 Markdown 格式返回；\n4. 获取文档的所有块；\n5. 获取文档的基本信息；\n6. 搜索文档类型的文档；\n7. 搜索 PPT 类型的文档；"
+      position:
+        x: 3663.825214248964
+        y: 392.25159384831545
+      parameters:
+        apiParam:
+            - name: apiID
+              input:
+                type: string
+                value: "7501597925768953894"
+            - name: apiName
+              input:
+                type: string
+                value: "upload_media"
+            - name: pluginID
+              input:
+                type: string
+                value: "7395047785122398235"
+            - name: pluginName
+              input:
+                type: string
+                value: "飞书云文档"
+            - name: pluginVersion
+              input:
+                type: string
+                value: ""
+            - name: tips
+              input:
+                type: string
+                value: ""
+            - name: outDocLink
+              input:
+                type: string
+                value: ""
+            - name: pluginAuthMode
+              input:
+                type: integer
+                value: 0
+        node_inputs:
+            - name: file_name
+              input:
+                type: string
+                value: "lateral..png"
+            - name: file_url
+              input:
+                value:
+                    path: l_url
+                    ref_node: "147891"
+            - name: parent_node
+              input:
+                type: string
+                value: "XEcOb1ukHasVcOsGtShcNxSynhc"
+            - name: parent_type
+              input:
+                type: string
+                value: "bitable"
+        node_outputs:
+            code:
+                type: float
+                value: null
+                description: 错误码，非 0 表示失败。
+            data:
+                type: object
+                properties:
+                    file_token:
+                        type: string
+                        value: null
+                        description: 上传的素材唯一标识
+                value: null
+                description: 响应结果
+            log_id:
+                type: string
+                value: null
+                description: 链路追踪 id
+            msg:
+                type: string
+                value: null
+                description: 错误描述
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            timeoutMs: 180000
+    - id: "195822"
+      type: condition
+      title: 选择器
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Condition-v2.jpg
+      description: "连接多个下游分支，若设定的条件成立则仅运行对应的分支，若均不成立则只运行“否则”分支"
+      position:
+        x: 2294.2215119454677
+        y: 29.388182847569574
+      parameters:
+        branches:
+            - condition:
+                conditions:
+                    - left:
+                        input:
+                            value:
+                                path: data
+                                ref_node: "117190"
+                      operator: 10
+                logic: 2
+    - id: "160764"
+      type: plugin
+      title: generateImage
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Plugin-v2.jpg
+      description: "图像生成"
+      position:
+        x: 2524.1222800627897
+        y: 308.07733013380874
+      parameters:
+        apiParam:
+            - name: apiID
+              input:
+                type: string
+                value: "7591769314940780563"
+            - name: apiName
+              input:
+                type: string
+                value: "generateImage"
+            - name: pluginID
+              input:
+                type: string
+                value: "7591769314940764179"
+            - name: pluginName
+              input:
+                type: string
+                value: "Doubao-Seedream-4.5（自接入版）"
+            - name: pluginVersion
+              input:
+                type: string
+                value: ""
+            - name: tips
+              input:
+                type: string
+                value: ""
+            - name: outDocLink
+              input:
+                type: string
+                value: ""
+        node_inputs:
+            - name: api_key
+              input:
+                type: string
+                value: "9d4b37c2-a567-4cfd-9765-f60343dace47"
+            - name: model_id
+              input:
+                type: string
+                value: "doubao-seedream-4-5-251128"
+            - name: prompt
+              input:
+                value:
+                    path: output
+                    ref_node: "158636"
+            - name: max_images
+              input:
+                type: integer
+                value: 8
+            - name: reference_images
+              input:
+                value:
+                    path: url
+                    ref_node: "113596"
+            - name: size
+              input:
+                type: string
+                value: "1024x1333"
+            - name: watermark
+              input:
+                type: boolean
+                value: false
+        node_outputs:
+            code:
+                type: float
+                value: null
+            data:
+                type: list
+                items:
+                    type: string
+                    value: null
+                value: null
+            log_id:
+                type: string
+                value: null
+            msg:
+                type: string
+                value: null
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            timeoutMs: 180000
+edges:
+    - source_node: "100001"
+      target_node: "114960"
+    - source_node: "100001"
+      target_node: "1759750"
+    - source_node: "190789"
+      target_node: "900001"
+    - source_node: "126006"
+      target_node: "190789"
+    - source_node: "113596"
+      target_node: "158636"
+    - source_node: "158636"
+      target_node: "117190"
+    - source_node: "114960"
+      target_node: "113596"
+    - source_node: "1759750"
+      target_node: "113596"
+    - source_node: "117190"
+      target_node: "195822"
+    - source_node: "195822"
+      target_node: "192607"
+      source_port: "true"
+    - source_node: "160764"
+      target_node: "192607"
+    - source_node: "192607"
+      target_node: "188366"
+    - source_node: "192607"
+      target_node: "147891"
+    - source_node: "188366"
+      target_node: "153447"
+    - source_node: "153447"
+      target_node: "144377"
+    - source_node: "1292508"
+      target_node: "144377"
+    - source_node: "144377"
+      target_node: "126006"
+      source_port: loop-output
+    - source_node: "147891"
+      target_node: "1292508"
+    - source_node: "195822"
+      target_node: "160764"
+      source_port: "false"

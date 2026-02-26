@@ -1,0 +1,22 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Allow images and videos in specific directories
+*.png
+*.jpg
+*.jpeg
+*.mp4
+*.mov
+!screenshots/*.png
+!screenshots/*.jpg
+!screenshots/*.jpeg
+!screenshots/*.mp4
+!screenshots/*.mov
+!workflow/*.png
+!workflow/*.jpg
+!workflow/*.jpeg
+
+# Large video files excluded (GitHub 100MB limit)
+screenshots/操作视频.mp4
