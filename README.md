@@ -1,274 +1,232 @@
-# Coze 电商 AI 内容生成工作流 - 帽子类目
+# Coze Hat Content Gen
 
-> 独立主导的 AI 内容生产闭环项目，将帽子电商内容制作周期从**人工几天**压缩至**端到端分钟级**，效率提升 **4000+ 倍**。
+帽子电商 AI 内容生产工作流：从商品图到小红书风格模特图、短视频和飞书多维表格归档。
 
-## 项目概述
+这是一个偏 **AI PM / AIGC 电商内容 / 工作流自动化** 的求职作品项目。它展示的是：如何把一个真实电商内容生产痛点，拆成可交付的 AI 工作流，并用 Prompt、模型选型和自动化节点完成端到端闭环。
 
-### 背景 & 痛点
+![Generated hat content](screenshots/generated_hat.png)
 
-传统帽子电商内容生产存在以下核心痛点：
+## 项目亮点
 
-| 痛点 | 传统方式 | 影响 |
-|------|----------|------|
-| **制作周期长** | 需要预约模特、摄影场地、后期修图，耗时数天 | 新品上架慢，错过销售窗口期 |
-| **成本高昂** | 单次拍摄成本数千元，多款式成本叠加明显 | 小批量试错成本高，难以快速迭代 |
-| **风格一致性差** | 不同场次拍摄风格难以统一 | 品牌视觉形象分散 |
-| **反馈成本高** | 效果不满意需重新拍摄 | 时间和资金双重浪费 |
+- **真实业务场景**：帽子电商商家需要快速生成小红书风格种草图和短视频素材
+- **端到端闭环**：商品图上传 → AI 生图 → AI 生视频 → 文案生成 → 飞书归档
+- **模型 A/B 测试**：对比 Nano Banana 与豆包 Seedream，最终选择更符合本土审美的方案
+- **Prompt 工程可复用**：沉淀老钱风格、小红书穿搭、场景扩写等提示词规则
+- **可交付资产完整**：包含 PRD、Prompt、Coze 工作流 YAML、生成样例和飞书归档截图
 
-### 解决方案
+## 我想解决的问题
 
-基于 **Coze 工作流平台**，从零搭建帽子电商 AI 内容生产闭环：
+传统电商内容生产通常要经历：
 
-```
-上传商品图 → 多模态模型生成 → 自动批量上传飞书
-     ↓              ↓                    ↓
-  参考图输入    8张模特图 + 5个短视频    结构化管理
-```
-
-### 核心功能
-
-- **自动生成小红书风格真人博主图**：8 张同模特、同场景、多角度连拍
-- **自动生成短视频**：5 个 3s 短视频，适配短视频平台
-- **自然语言配置**：支持自定义服装风格、场景、拍摄角度
-- **批量飞书同步**：一键上传至飞书多维表格，便于团队协作
-- **老钱松弛感风格**：主打"老钱风"审美，契合当前小红书头部博主调性
-
----
-
-## 技术方案
-
-### 模型选型 A/B 测试
-
-针对生图模型进行了 **A/B 对比测试**：
-
-| 模型 | 技术底座 | 客户反馈 | 结论 |
-|------|----------|----------|------|
-| Nano Banana | Gemini 2.5 Flash Image | - | - |
-| 豆包 Seedream 4.5 | 字节跳动自研 | **"效果更好"** | ✅ 选用 |
-
-> **客户原话**："还是豆包 Seedream 4.5 生成的效果更好，更符合国人审美。"
-
-### 工作流架构
-
-#### 工作流 1：生图工作流 (maozi_shengtu_3)
-
-```mermaid
-graph TB
-    Start([开始<br/>输入: front_image, lateral_image<br/>scene, clothing, Hat_style])
-    Start --> Cutout1[cutout-1<br/>智能抠图-正面]
-    Start --> Cutout2[cutout-2<br/>智能抠图-侧面]
-
-    Cutout1 --> Array2String[代码 转array<br/>提取URL数组]
-    Cutout2 --> Array2String
-
-    Array2String --> PromptLLM[LLM Prompt生成<br/>豆包·1.6·视觉理解]
-    PromptLLM --> Selector{选择器<br/>条件判断}
-
-    Selector -->|有数据| GenImg1[generateImage<br/>1024x1333]
-    Selector -->|无数据| GenImg2[generateImage_3<br/>2400x3200]
-
-    GenImg1 --> XHSWrite[小红书文案生成<br/>豆包·1.8·深度思考]
-    GenImg2 --> XHSWrite
-
-    XHSWrite --> Img2Url1[代码 image转url-1<br/>正面图]
-    XHSWrite --> Img2Url2[代码 image转url-2<br/>侧面图]
-
-    Img2Url1 --> Upload1[upload_media_1<br/>飞书-正面]
-    Img2Url2 --> Upload3[upload_media_3<br/>飞书-侧面]
-
-    Upload1 --> Loop[循环 <br/>遍历8张生成图]
-    Upload3 --> Loop
-
-    Loop --> Upload2[upload_media_2<br/>上传每张生成图]
-    Upload2 --> PackArray[代码 打包对象数组<br/>组装飞书记录]
-    PackArray --> AddRecords[add_records<br/>飞书多维表格]
-    AddRecords --> End([结束<br/>输出: title, content])
+```text
+选品/上新
+  ↓
+找模特、约摄影、布景
+  ↓
+拍摄与修图
+  ↓
+反馈不满意后重新拍
+  ↓
+再整理到团队协作表格
 ```
 
-#### 工作流 2：视频工作流 (maizi_shipin)
+这套流程的问题是：
 
-```mermaid
-graph TB
-    StartV([开始<br/>输入: p1-p5 五张图片, hat_type])
-    StartV --> ToString[代码 转string<br/>5张图片转URL列表]
+| 痛点 | 传统方式 | 业务影响 |
+|------|----------|----------|
+| 周期长 | 2-3 天起步 | 新品上架慢，容易错过热点 |
+| 成本高 | 模特、摄影、后期成本叠加 | 小商家试错压力大 |
+| 反馈慢 | 效果不好要重拍 | 迭代周期长 |
+| 风格不稳定 | 依赖摄影师和现场条件 | 品牌视觉难统一 |
 
-    ToString --> LoopV[循环<br/>遍历5张图片]
-    LoopV --> VideoGen[video_1<br/>豆包视频生成]
-    VideoGen -.->|循环| LoopV
-    VideoGen --> DoubaoTips["抖音爆款专家"提示词<br/>豆包·1.8·深度思考]
-    LoopV --> PackCode[代码<br/>打包数据]
-    LoopV --> Concat[concat_videos<br/>视频拼接工具]
+这个项目的目标是把内容生产压缩成一个分钟级工作流，让商家可以快速试风格、试场景、试素材。
 
-    DoubaoTips --> PackCode
-    Concat --> PackCode
-    PackCode --> AddRecordsV[add_records<br/>飞书多维表格]
-    AddRecordsV --> EndV([结束<br/>输出: 已完成])
+## 解决方案
+
+```text
+帽子正面图 / 侧面图
+  ↓
+抠图与商品特征提取
+  ↓
+LLM 生成场景化 Prompt
+  ↓
+Seedream 生成 8 张同模特、多角度穿搭图
+  ↓
+Seedance / 视频节点生成短视频
+  ↓
+LLM 生成小红书/抖音文案
+  ↓
+图片、视频、文案写入飞书多维表格
 ```
-
-#### 工作流说明
-
-**生图工作流 (maozi_shengtu_3)**
-- **输入**：帽子正面图、侧面图、场景描述、服装要求、帽子款式
-- **核心处理**：
-  1. 智能抠图提取帽子主体（生成 mask）
-  2. LLM 生成场景化生图 Prompt
-  3. Seedream 4.5 生成 8 张模特图（双分辨率容错）
-  4. LLM 生成小红书文案（标题 + 正文）
-  5. 循环上传所有图片到飞书云文档
-  6. 打包数据写入飞书多维表格
-- **输出**：小红书标题、文案，飞书记录链接
-
-**视频工作流 (maizi_shipin)**
-- **输入**：5 张 AI 生图 + 帽子款式
-- **核心处理**：
-  1. 转换图片为 URL 列表
-  2. 循环调用豆包 Seedance Pro 生成 5 个 3s 视频
-  3. LLM 生成抖音爆款文案
-  5. 打包数据写入飞书多维表格
-- **输出**：5 个视频链接 + 抖音文案
-
----
-
-## Prompt 工程核心
-
-### 生成小红书穿搭风格 Prompt
-
-```
-你是小红书穿搭提示词专家。根据用户输入的 {{scene}}（场景描述）和{{clothing}}（服装饰品要求）输出 300字以内 生图 Prompt。
-
-必须严格遵守：
-
-最优先：100%还原{{front_image}}{{lateral_image}}这两个参考图里面的帽子的版型、形状、颜色。
-
-要求：同一模特、模特的长相不允许发生变化、同一场景、同一服装。
-
-人物与形象： 中国面孔，大众脸美女，可参考明星卢昱晓长相，气质可参考35岁高圆圆/董洁，年龄28-32岁。
-
-画面与构图： 产出一组8张同一人物、同一场景、同一服装、姿势不同连拍。3:4竖版，胶片颗粒感，秋冬氛围，85mm焦距，模仿小红书头部博主审美。
-
-服装风格：契合当前场景、季节、温度。质感好，拒绝大Logo、夸张印花、紧身衣。合身剪裁，选经典款。穿搭要求给人很有品味、很会穿搭的感觉。（若滑雪场，为滑雪服）
-
-妆容： 自然感，腮红适量加重。
-
-配饰： 精简，显品质与财力（如细珍珠项链、简约腕表）。
-
-场景扩写：  根据用户输入的  {{scene}}进行扩写。若为居家，场景为室内简约居家环境（米白色墙面+木质地板）、法式奶油风；户外扩写为高级咖啡馆/美术馆。场景尽可能简约，不要出现很假的场景。
-
-动作： 至少4张对镜自拍，手持复古CCD相机/苹果手机，若为相机，要求小巧精致。姿势可为坐椅托腮举机侧脸展帽，蹲姿举手机对镜自拍，或站姿单手叉腰举手机对镜自拍。对镜拍需稍微转头，多角度展示帽子。同一组图只允许使用一种道具。
-
-禁止： 背景不允许出现其他人。表情自然松弛。不允许换衣服。不允许场景很跳脱。不允许很奇怪的动作。严禁出现不自然的仰头或扭曲姿态。
-
-输出要求： 直接输出提示词正文，严禁任何开场白，严禁超过300字。
-```
-
-### Prompt 设计亮点
-
-1. **结构化约束**：按优先级分层（最优先 → 要求 → 禁止）
-2. **风格锚定**：用明星参考（卢昱晓、高圆圆、董洁）确保输出稳定
-3. **场景自适应**：支持居家/户外/滑雪场等多场景扩写
-4. **动作指导**：明确至少 4 张对镜自拍，保证帽子多角度展示
-
----
 
 ## 项目成果
 
-### 量化数据
+| 指标 | 传统方式 | AI 工作流 | 结果 |
+|------|----------|-----------|------|
+| 内容制作周期 | 2-3 天 | < 10 分钟 | 4000x+ 效率提升 |
+| 反馈迭代成本 | 重新拍摄 | 调整 Prompt 后重跑 | 大幅降低 |
+| 风格一致性 | 依赖拍摄现场 | Prompt + 模型约束 | 更可控 |
+| 团队协作 | 人工整理素材 | 自动写入飞书 | 更易追踪 |
 
-| 指标 | 传统方式 | AI 工作流 | 提升幅度 |
-|------|----------|-----------|----------|
-| 内容制作周期 | 2-3 天 | < 10 分钟 | **4000x+** |
-| 反馈成本 | 重新拍摄（数千元） | 调整 Prompt 重跑 | **降低 ~80%** |
-| 风格一致性 | 低（依赖摄影师） | 高（Prompt 决定） | - |
+客户 A/B 测试反馈中，豆包 Seedream 输出更符合帽子类目和小红书审美，因此最终选用 Seedream 作为主要生图方案。
 
-### 客户反馈
+## 生成效果
 
-> "还是豆包 Seedream 4.5 生成的效果更好。"
-> —— 帽子电商客户 A/B 测试反馈
+### Seedream 生成样例
 
-### 后续合作
+| 示例 1 | 示例 2 | 示例 3 |
+|--------|--------|--------|
+| ![](screenshots/seedream1.png) | ![](screenshots/seedream2.png) | ![](screenshots/seedream3.png) |
 
-基于本项目成果，已与客户开展**童帽工作流**和**选股智能体**合作。
+### Nano Banana 对比样例
 
----
+| 示例 1 | 示例 2 | 示例 3 |
+|--------|--------|--------|
+| ![](screenshots/nano1.png) | ![](screenshots/nano2.png) | ![](screenshots/nano3.png) |
 
-## 如何复现
+## 工作流设计
 
-### 前置要求
+### 1. 生图工作流
 
-- Coze 账号（[coze.cn](https://coze.cn)）
-- 豆包 Seedream 4.5 API 访问权限
-- 飞书开放平台应用（用于多维表格写入）
+文件：
 
-### 快速开始
+- [workflow/maozi_shengtu_3-draft.yaml](workflow/maozi_shengtu_3-draft.yaml)
 
-1. **克隆本仓库**
-   ```bash
-   git clone https://github.com/lindixu6-hash/coze-hat-content-gen.git
-   ```
+输入：
 
-2. **查看 PRD 文档**
-   ```bash
-   cat PRD/PRD.md
-   ```
+- 帽子正面图
+- 帽子侧面图
+- 场景描述
+- 服装要求
+- 帽子款式
 
-3. **使用 Prompt 模板**
-   ```bash
-   cat prompts/old_money_style_prompt.txt
-   ```
+输出：
 
-4. **在 Coze 创建工作流**
-   - 参考 `/workflow/` 目录下的截图
-   - 配置 Seedream 4.5 插件节点
-   - 配置飞书多维表格写入节点
+- 8 张同模特、同场景、多角度模特图
+- 小红书标题
+- 小红书正文
+- 飞书多维表格记录
 
----
+### 2. 视频工作流
+
+文件：
+
+- [workflow/maizi_shipin-draft.yaml](workflow/maizi_shipin-draft.yaml)
+
+输入：
+
+- 5 张 AI 生成图
+- 帽子款式
+
+输出：
+
+- 5 个短视频
+- 抖音风格文案
+- 飞书多维表格记录
+
+## Prompt 工程
+
+Prompt 不是简单描述“生成一张好看的图”，而是按优先级设计约束：
+
+1. **商品还原优先**：帽子版型、形状、颜色必须还原参考图
+2. **人物一致性**：同一模特、同一服装、同一场景
+3. **平台审美锚定**：小红书头部博主、老钱松弛感、胶片颗粒感
+4. **商品展示动作**：至少 4 张对镜自拍，多角度展示帽子
+5. **负向约束**：避免多人背景、换衣服、夸张动作、假场景
+
+核心 Prompt：
+
+- [prompts/old_money_style_prompt.txt](prompts/old_money_style_prompt.txt)
+- [prompts/scene_expansion_rules.txt](prompts/scene_expansion_rules.txt)
+
+## 项目材料
+
+- PRD: [PRD/PRD.md](PRD/PRD.md)
+- Prompt: [prompts/](prompts/)
+- Coze 工作流: [workflow/](workflow/)
+- 生成效果截图: [screenshots/](screenshots/)
 
 ## 文件结构
 
-```
+```text
 coze-hat-content-gen/
-├── README.md              # 本文件
 ├── PRD/
-│   └── PRD.md            # 完整产品需求文档
+│   └── PRD.md
 ├── prompts/
-│   ├── old_money_style_prompt.txt    # 老钱风格生成 Prompt
-│   └── scene_expansion_rules.txt     # 场景扩写规则
+│   ├── old_money_style_prompt.txt
+│   └── scene_expansion_rules.txt
+├── workflow/
+│   ├── maozi_shengtu_3-draft.yaml
+│   └── maizi_shipin-draft.yaml
 ├── screenshots/
-│   ├── ab_test_comparison.png        # A/B 测试对比图
-│   ├── generated_output.png          # 最终生成效果示例
-│   ├── lark_table.png                # 飞书表格批量上传效果
-│   └── customer_feedback.png         # 客户反馈截图
-└── workflow/
-    ├── coze_workflow_overview.png    # Coze 工作流全景
-    ├── seedream_node_config.png      # Seedream 节点配置
-    └── lark_node_config.png          # 飞书节点配置
+└── README.md
 ```
 
----
+## 如何复现
 
-## 反思 & 迭代
+### 前置条件
 
-### 已完成的优化
+- Coze / 扣子工作流账号
+- 豆包 Seedream / Seedance 相关能力
+- 飞书开放平台应用
+- 飞书多维表格
 
-- [x] 模型选型：通过 A/B 测试确定 Seedream 4.5 为最优解
-- [x] Prompt 迭代：从通用 Prompt 细化为场景自适应 Prompt
-- [x] 工作流闭环：打通生图 → 飞书的完整链路
+### 使用步骤
 
-### 未来迭代方向
+1. 克隆仓库
 
-- [ ] 支持更多帽型（鸭舌帽、渔夫帽、贝雷帽等）
-- [ ] 支持男帽模特生成
-- [ ] 加入自动文案生成（小红书标题、正文、标签）
-- [ ] 支持直接发布到小红书 API（如开放）
+```bash
+git clone https://github.com/lindixu6-hash/coze-hat-content-gen.git
+cd coze-hat-content-gen
+```
 
----
+2. 查看 PRD 和 Prompt
 
-## 许可证
+```bash
+cat PRD/PRD.md
+cat prompts/old_money_style_prompt.txt
+```
 
-本项目仅供学习交流使用。
+3. 导入或参考 Coze 工作流
 
----
+```bash
+ls workflow/
+```
 
-## 联系方式
+4. 替换占位配置
 
-- GitHub: [@lindixu6-hash](https://github.com/lindixu6-hash)
+工作流文件中已经将敏感配置替换为占位符：
+
+- `YOUR_SEEDREAM_API_KEY`
+- `YOUR_FEISHU_BITABLE_APP_TOKEN`
+- `YOUR_FEISHU_TABLE_ID`
+
+请在自己的 Coze / 飞书环境中替换为实际配置。
+
+## 安全说明
+
+这个仓库不应提交真实 API Key、飞书 app_token、table_id 或客户隐私数据。  
+如果你 fork 或复用这个项目，请确认工作流中的平台配置已脱敏。
+
+## 这个项目体现的能力
+
+如果用于 AI PM / AIGC 产品 / 电商工具方向求职，可以重点展示：
+
+- **需求拆解能力**：从电商内容生产痛点拆出可自动化链路
+- **AIGC 产品设计能力**：把生图、生视频、文案和协作表格串成闭环
+- **Prompt 工程能力**：将审美、动作、商品还原和负向约束结构化
+- **模型选型能力**：通过 A/B 测试选择更符合业务目标的模型
+- **工作流搭建能力**：用 Coze 和飞书完成低代码自动化交付
+- **商业交付意识**：项目成果触发后续童帽工作流、选股智能体等合作机会
+
+## 下一步优化
+
+- 支持更多帽型：鸭舌帽、渔夫帽、贝雷帽、童帽等
+- 增加男帽和儿童模特生成模板
+- 增加生成效果评分表，用于模型和 Prompt eval
+- 支持按平台自动生成不同文案：小红书、抖音、淘宝详情页
+- 增加素材审核节点，减少畸形图和商品还原偏差
+
+## License
+
+本项目仅供学习、作品集展示和交流使用。

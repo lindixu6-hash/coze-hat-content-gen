@@ -98,7 +98,7 @@ nodes:
             - name: app_token
               input:
                 type: string
-                value: "XEcOb1ukHasVcOsGtShcNxSynhc"
+                value: "YOUR_FEISHU_BITABLE_APP_TOKEN"
             - name: records
               input:
                 type: list
@@ -111,7 +111,7 @@ nodes:
             - name: table_id
               input:
                 type: string
-                value: "tbljLLVsAaWBJP19"
+                value: "YOUR_FEISHU_TABLE_ID"
             - name: table_name
               input:
                 type: string
@@ -419,7 +419,7 @@ nodes:
             - name: api_key
               input:
                 type: string
-                value: "9d4b37c2-a567-4cfd-9765-f60343dace47"
+                value: "YOUR_SEEDREAM_API_KEY"
             - name: model_id
               input:
                 type: string
@@ -798,7 +798,7 @@ nodes:
             - name: parent_node
               input:
                 type: string
-                value: "XEcOb1ukHasVcOsGtShcNxSynhc"
+                value: "YOUR_FEISHU_BITABLE_APP_TOKEN"
             - name: parent_type
               input:
                 type: string
@@ -950,7 +950,7 @@ nodes:
                 - name: parent_node
                   input:
                     type: string
-                    value: "XEcOb1ukHasVcOsGtShcNxSynhc"
+                    value: "YOUR_FEISHU_BITABLE_APP_TOKEN"
                 - name: parent_type
                   input:
                     type: string
@@ -1197,7 +1197,7 @@ nodes:
             - name: parent_node
               input:
                 type: string
-                value: "XEcOb1ukHasVcOsGtShcNxSynhc"
+                value: "YOUR_FEISHU_BITABLE_APP_TOKEN"
             - name: parent_type
               input:
                 type: string
@@ -1289,7 +1289,7 @@ nodes:
             - name: api_key
               input:
                 type: string
-                value: "9d4b37c2-a567-4cfd-9765-f60343dace47"
+                value: "YOUR_SEEDREAM_API_KEY"
             - name: model_id
               input:
                 type: string

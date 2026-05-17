@@ -100,7 +100,7 @@ nodes:
             - name: app_token
               input:
                 type: string
-                value: "BOSFbMKIgaWqn9sMEeycl11Sn0d"
+                value: "YOUR_FEISHU_BITABLE_APP_TOKEN"
             - name: records
               input:
                 type: list
@@ -174,7 +174,7 @@ nodes:
             - name: table_id
               input:
                 type: string
-                value: "tblq3F7CpusPl6Bo"
+                value: "YOUR_FEISHU_TABLE_ID"
         node_outputs:
             code:
                 type: float
